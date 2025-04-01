@@ -11,7 +11,7 @@ namespace py = pybind11;
     try {                                        \
         return expr;                             \
     } catch (const std::exception& e) {          \
-        throw py::runtime_error(e.what());       \
+        throw py::value_error(e.what());      \
     }
 
 PYBIND11_MODULE(monero, m) {
@@ -28,12 +28,25 @@ PYBIND11_MODULE(monero, m) {
     // monero_wallet_config
     py::class_<monero::monero_wallet_config, std::shared_ptr<monero::monero_wallet_config>>(m, "WalletConfig")
         .def(py::init<>())
-        .def_readwrite("path", &monero::monero_wallet_config::m_path)
-        .def_readwrite("password", &monero::monero_wallet_config::m_password)
-        .def_readwrite("network_type", &monero::monero_wallet_config::m_network_type)
-        .def_readwrite("seed", &monero::monero_wallet_config::m_seed)
-        .def_readwrite("language", &monero::monero_wallet_config::m_language)
-        .def_readwrite("restore_height", &monero::monero_wallet_config::m_restore_height);
+        .def_property("path", 
+            [](const monero::monero_wallet_config& self) { return self.m_path; },
+            [](monero::monero_wallet_config& self, const std::string& val) { self.m_path = val; })
+        .def_property("password", 
+            [](const monero::monero_wallet_config& self) { return self.m_password; },
+            [](monero::monero_wallet_config& self, const std::string& val) { self.m_password = val; })
+        .def_property("network_type", 
+            [](const monero::monero_wallet_config& self) { return self.m_network_type; },
+            [](monero::monero_wallet_config& self, monero::monero_network_type nettype) { self.m_network_type = nettype; })
+        .def_property("seed", 
+            [](const monero::monero_wallet_config& self) { return self.m_seed.value_or(""); },
+            [](monero::monero_wallet_config& self, const std::string& val) { self.m_seed = val; })
+        .def_property("language", 
+            [](const monero::monero_wallet_config& self) { return self.m_language.value_or(""); },
+            [](monero::monero_wallet_config& self, const std::string& val) { self.m_language = val; })
+        .def_property("restore_height", 
+            [](const monero::monero_wallet_config& self) { return self.m_restore_height; },
+            [](monero::monero_wallet_config& self, uint64_t height) { self.m_restore_height = height; });
+
 
     // monero_wallet_keys
     py::class_<monero::monero_wallet_keys, std::shared_ptr<monero::monero_wallet_keys>>(m, "WalletKeys")

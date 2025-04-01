@@ -8,3 +8,5 @@ monero_python.egg-info/dependency_links.txt
 monero_python.egg-info/requires.txt
 monero_python.egg-info/top_level.txt
 src/monero_bindings.cpp
+tests/test_wallet_full.py
+tests/test_wallet_keys.py
